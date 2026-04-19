@@ -1,0 +1,31 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+
+# GPTBot
+User-agent: GPTBot
+Allow: /
+
+# Google-Extended
+User-agent: Google-Extended
+Allow: /
+
+# Applebot-Extended
+User-agent: Applebot-Extended
+Allow: /
+
+# PerplexityBot
+User-agent: PerplexityBot
+Allow: /
+
+# ClaudeBot
+User-agent: ClaudeBot
+Allow: /
+
+# Host
+Host: http://187.127.6.135
+
+# Sitemaps
+Sitemap: http://187.127.6.135/sitemap.xml
