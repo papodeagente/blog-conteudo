@@ -6,12 +6,20 @@ import {
   generateBreadcrumbSchema,
   generateFAQSchema,
 } from "@/lib/structured-data";
+import Breadcrumb from "@/components/Breadcrumb";
+import AuthorBox from "@/components/AuthorBox";
+import ShareButtons from "@/components/ShareButtons";
+import FAQAccordion from "@/components/FAQAccordion";
+import CTABanner from "@/components/CTABanner";
+import PostCard from "@/components/PostCard";
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export const dynamic = "force-dynamic";
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -22,7 +30,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) return {};
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
   const title = post.metaTitle || post.title;
   const description = post.metaDescription || post.excerpt || "";
 
@@ -65,6 +72,21 @@ export default async function PostPage({ params }: Props) {
 
   if (!post) notFound();
 
+  // Related posts: same category, exclude current
+  const relatedPosts = await prisma.post.findMany({
+    where: {
+      published: true,
+      categoryId: post.categoryId,
+      id: { not: post.id },
+    },
+    orderBy: { publishedAt: "desc" },
+    take: 3,
+    include: {
+      author: true,
+      category: true,
+    },
+  });
+
   const articleSchema = generateArticleSchema({
     title: post.title,
     description: post.metaDescription || post.excerpt || "",
@@ -86,8 +108,29 @@ export default async function PostPage({ params }: Props) {
     | { question: string; answer: string }[]
     | null;
 
+  // Estimated reading time
+  const wordCount = Math.ceil(post.content.length / 5);
+  const readingTime = Math.max(1, Math.ceil(wordCount / 200));
+
+  // Split content for mid-article CTA
+  const contentParts = (() => {
+    const thirdPoint = Math.floor(post.content.length / 3);
+    // Find a closing tag near the 1/3 mark
+    const splitIndex = post.content.indexOf("</p>", thirdPoint);
+    if (splitIndex !== -1) {
+      const breakPoint = splitIndex + 4;
+      return {
+        first: post.content.slice(0, breakPoint),
+        second: post.content.slice(breakPoint),
+      };
+    }
+    return { first: post.content, second: "" };
+  })();
+
+  const postUrl = `${siteUrl}/blog/${post.slug}`;
+
   return (
-    <article className="mx-auto max-w-3xl px-4 py-12">
+    <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -105,99 +148,193 @@ export default async function PostPage({ params }: Props) {
         />
       )}
 
-      <nav className="text-sm text-gray-500 mb-8" aria-label="Breadcrumb">
-        <ol className="flex gap-2">
-          <li>
-            <a href="/" className="hover:text-gray-700">
-              Home
-            </a>
-          </li>
-          <li>/</li>
-          <li>
-            <a
-              href={`/categorias/${post.category.slug}`}
-              className="hover:text-gray-700"
-            >
-              {post.category.name}
-            </a>
-          </li>
-          <li>/</li>
-          <li className="text-gray-900">{post.title}</li>
-        </ol>
-      </nav>
+      {/* Breadcrumb */}
+      <Breadcrumb
+        items={[
+          { name: "Home", href: "/" },
+          { name: post.category.name, href: `/categorias/${post.category.slug}` },
+          { name: post.title },
+        ]}
+      />
 
-      <header className="mb-10">
-        <div className="flex items-center gap-3 text-sm text-gray-500 mb-4">
-          <span className="bg-blue-50 text-blue-700 px-2 py-0.5 rounded text-xs font-medium">
-            {post.category.name}
-          </span>
-          {post.publishedAt && (
-            <time dateTime={post.publishedAt.toISOString()}>
-              {new Intl.DateTimeFormat("pt-BR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              }).format(post.publishedAt)}
-            </time>
-          )}
-        </div>
-        <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-4">
+      {/* Header */}
+      <header className="max-w-3xl mx-auto mb-10">
+        <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#1A56DB]/10 text-[#1A56DB] mb-4">
+          {post.category.name}
+        </span>
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F172A] leading-tight mb-4">
           {post.title}
         </h1>
-        {post.excerpt && (
-          <p className="text-xl text-gray-600 leading-relaxed">
-            {post.excerpt}
-          </p>
-        )}
-        <div className="mt-4 flex items-center gap-3 text-sm text-gray-500">
-          <span>Por {post.author.name}</span>
+        <div className="flex flex-wrap items-center gap-4 text-sm text-[#334155]">
+          <span className="font-medium">{post.author.name}</span>
+          {post.publishedAt && (
+            <>
+              <span className="text-gray-300">|</span>
+              <time dateTime={post.publishedAt.toISOString()}>
+                {new Intl.DateTimeFormat("pt-BR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                }).format(post.publishedAt)}
+              </time>
+            </>
+          )}
+          <span className="text-gray-300">|</span>
+          <span>{readingTime} min de leitura</span>
         </div>
       </header>
 
+      {/* Cover Image */}
       {post.coverImage && (
-        <img
-          src={post.coverImage}
-          alt={post.title}
-          className="w-full rounded-lg mb-10"
-        />
-      )}
-
-      <div
-        className="prose prose-lg max-w-none prose-headings:font-semibold prose-a:text-blue-600"
-        dangerouslySetInnerHTML={{ __html: post.content }}
-      />
-
-      {post.tags.length > 0 && (
-        <div className="mt-12 pt-6 border-t border-gray-100">
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map(({ tag }) => (
-              <a
-                key={tag.id}
-                href={`/tags/${tag.slug}`}
-                className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm hover:bg-gray-200"
-              >
-                #{tag.name}
-              </a>
-            ))}
-          </div>
+        <div className="max-w-4xl mx-auto mb-10">
+          <img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full rounded-xl object-cover max-h-[480px]"
+          />
         </div>
       )}
 
-      {post.keyQuestions.length > 0 && (
-        <section className="mt-12 bg-blue-50 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Perguntas respondidas neste artigo
+      {/* Three-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-[64px_1fr_240px] gap-8 max-w-5xl mx-auto">
+        {/* Left: Share Buttons (sticky) */}
+        <aside className="hidden lg:block">
+          <ShareButtons url={postUrl} title={post.title} />
+        </aside>
+
+        {/* Center: Content */}
+        <div>
+          {/* First part of content */}
+          <div
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-[#0F172A] prose-a:text-[#1A56DB] prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
+            dangerouslySetInnerHTML={{ __html: contentParts.first }}
+          />
+
+          {/* Mid-article CTA */}
+          <CTABanner
+            variant="primary"
+            title="Guia Gratuito de CRM"
+            description="Baixe nosso guia completo e aprenda a implementar um CRM que realmente gera resultados para sua equipe."
+            buttonText="Baixar Gratis"
+            buttonLink="#"
+          />
+
+          {/* Second part of content */}
+          {contentParts.second && (
+            <div
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-[#0F172A] prose-a:text-[#1A56DB] prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
+              dangerouslySetInnerHTML={{ __html: contentParts.second }}
+            />
+          )}
+
+          {/* Tags */}
+          {post.tags.length > 0 && (
+            <div className="mt-10 pt-6 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map(({ tag }) => (
+                  <a
+                    key={tag.id}
+                    href={`/tags/${tag.slug}`}
+                    className="bg-gray-100 text-[#334155] px-3 py-1 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                  >
+                    #{tag.name}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* FAQ Section */}
+          {faqData && faqData.length > 0 && (
+            <section className="mt-12">
+              <h2 className="text-2xl font-bold text-[#0F172A] mb-6">
+                Perguntas Frequentes
+              </h2>
+              <FAQAccordion items={faqData} />
+            </section>
+          )}
+
+          {/* Key Questions */}
+          {post.keyQuestions.length > 0 && (
+            <section className="mt-12 bg-[#F8FAFC] rounded-xl p-6 border border-gray-200">
+              <h2 className="text-xl font-bold text-[#0F172A] mb-4">
+                Perguntas respondidas neste artigo
+              </h2>
+              <ul className="space-y-3">
+                {post.keyQuestions.map((q, i) => (
+                  <li key={i} className="flex gap-3 text-[#334155]">
+                    <span className="text-[#1A56DB] font-bold shrink-0">?</span>
+                    <span>{q}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* Mobile Share Buttons */}
+          <div className="lg:hidden mt-8 flex justify-center">
+            <div className="flex gap-3">
+              <ShareButtons url={postUrl} title={post.title} />
+            </div>
+          </div>
+
+          {/* Author Box */}
+          <div className="mt-12">
+            <AuthorBox
+              name={post.author.name}
+              bio={post.author.bio || ""}
+              slug={post.author.slug}
+            />
+          </div>
+        </div>
+
+        {/* Right: Sidebar (TOC placeholder) */}
+        <aside className="hidden lg:block">
+          <div className="sticky top-24 bg-[#F8FAFC] rounded-xl p-5 border border-gray-200">
+            <h4 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider mb-3">
+              Neste artigo
+            </h4>
+            <p className="text-xs text-gray-400">
+              Indice de conteudo em breve.
+            </p>
+          </div>
+        </aside>
+      </div>
+
+      {/* Related Posts */}
+      {relatedPosts.length > 0 && (
+        <section className="max-w-5xl mx-auto mt-16 pt-12 border-t border-gray-200">
+          <h2 className="text-2xl font-bold text-[#0F172A] mb-8">
+            Artigos Relacionados
           </h2>
-          <ul className="space-y-2">
-            {post.keyQuestions.map((q, i) => (
-              <li key={i} className="text-gray-700 flex gap-2">
-                <span className="text-blue-500 font-bold">?</span>
-                {q}
-              </li>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {relatedPosts.map((related) => (
+              <PostCard
+                key={related.id}
+                title={related.title}
+                slug={related.slug}
+                excerpt={related.excerpt || ""}
+                coverImage={related.coverImage || undefined}
+                publishedAt={related.publishedAt?.toISOString() || related.createdAt.toISOString()}
+                authorName={related.author.name}
+                categoryName={related.category.name}
+                categorySlug={related.category.slug}
+              />
             ))}
-          </ul>
+          </div>
         </section>
       )}
+
+      {/* Final CTA */}
+      <div className="max-w-3xl mx-auto mt-12">
+        <CTABanner
+          variant="secondary"
+          title="Pronto para escalar suas vendas?"
+          description="Teste o CRM da Entur por 14 dias gratis e veja seus resultados melhorarem."
+          buttonText="Comecar Teste Gratis"
+          buttonLink="#"
+        />
+      </div>
     </article>
   );
 }

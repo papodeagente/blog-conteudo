@@ -5,12 +5,20 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const published = searchParams.get("published");
   const category = searchParams.get("category");
+  const search = searchParams.get("search");
   const limit = parseInt(searchParams.get("limit") || "20");
   const page = parseInt(searchParams.get("page") || "1");
 
   const where: Record<string, unknown> = {};
   if (published !== null) where.published = published === "true";
   if (category) where.category = { slug: category };
+
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { content: { contains: search, mode: "insensitive" } },
+    ];
+  }
 
   const [posts, total] = await Promise.all([
     prisma.post.findMany({

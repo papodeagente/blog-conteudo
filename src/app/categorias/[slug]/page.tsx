@@ -1,7 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import Breadcrumb from "@/components/Breadcrumb";
+import PostCard from "@/components/PostCard";
 
 export const dynamic = "force-dynamic";
 
@@ -32,7 +33,7 @@ export default async function CategoryPage({ params }: Props) {
         orderBy: { publishedAt: "desc" },
         include: {
           author: true,
-          tags: { include: { tag: true } },
+          category: true,
         },
       },
     },
@@ -41,46 +42,40 @@ export default async function CategoryPage({ params }: Props) {
   if (!category) notFound();
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-12">
-      <h1 className="text-3xl font-bold tracking-tight text-gray-900 mb-2">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      <Breadcrumb
+        items={[
+          { name: "Home", href: "/" },
+          { name: "Categorias", href: "/categorias" },
+          { name: category.name },
+        ]}
+      />
+
+      <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-3">
         {category.name}
       </h1>
       {category.description && (
-        <p className="text-gray-600 mb-8">{category.description}</p>
+        <p className="text-[#334155] mb-10 max-w-2xl">{category.description}</p>
       )}
 
       {category.posts.length === 0 ? (
-        <p className="text-gray-500">Nenhum artigo nesta categoria ainda.</p>
+        <p className="text-gray-500 text-center py-12">
+          Nenhum artigo nesta categoria ainda.
+        </p>
       ) : (
-        <div className="space-y-8">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {category.posts.map((post) => (
-            <article
+            <PostCard
               key={post.id}
-              className="border-b border-gray-100 pb-8 last:border-0"
-            >
-              <div className="text-sm text-gray-500 mb-2">
-                {post.publishedAt && (
-                  <time dateTime={post.publishedAt.toISOString()}>
-                    {new Intl.DateTimeFormat("pt-BR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    }).format(post.publishedAt)}
-                  </time>
-                )}
-              </div>
-              <h2 className="text-xl font-semibold mb-2">
-                <Link
-                  href={`/blog/${post.slug}`}
-                  className="text-gray-900 hover:text-blue-600"
-                >
-                  {post.title}
-                </Link>
-              </h2>
-              {post.excerpt && (
-                <p className="text-gray-600">{post.excerpt}</p>
-              )}
-            </article>
+              title={post.title}
+              slug={post.slug}
+              excerpt={post.excerpt || ""}
+              coverImage={post.coverImage || undefined}
+              publishedAt={post.publishedAt?.toISOString() || post.createdAt.toISOString()}
+              authorName={post.author.name}
+              categoryName={category.name}
+              categorySlug={category.slug}
+            />
           ))}
         </div>
       )}

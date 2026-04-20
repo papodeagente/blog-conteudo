@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { generateWebSiteSchema } from "@/lib/structured-data";
+import TopBanner from "@/components/TopBanner";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -65,28 +68,14 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col bg-white text-gray-900">
-        <header className="border-b border-gray-100">
-          <nav className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-            <a href="/" className="text-xl font-bold text-gray-900">
-              Blog de Conteudo
-            </a>
-            <div className="flex gap-6 text-sm text-gray-600">
-              <a href="/blog" className="hover:text-gray-900">
-                Artigos
-              </a>
-              <a href="/categorias" className="hover:text-gray-900">
-                Categorias
-              </a>
-            </div>
-          </nav>
-        </header>
+        <TopBanner
+          message="Conheca o CRM da Entur — Teste gratis por 14 dias"
+          link="#"
+          linkText="Comecar agora"
+        />
+        <Header />
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-gray-100 py-8 mt-16">
-          <div className="mx-auto max-w-5xl px-4 text-center text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Blog de Conteudo. Todos os
-            direitos reservados.
-          </div>
-        </footer>
+        <Footer />
       </body>
     </html>
   );
