@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Todos os Artigos",
-  description: "Explore todos os artigos do Blog de Conteudo.",
+  description: "Explore todos os artigos do Escola de CRM.",
 };
 
 interface Props {

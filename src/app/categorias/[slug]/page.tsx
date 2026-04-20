@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: category.name,
     description:
       category.description ||
-      `Artigos sobre ${category.name} no Blog de Conteudo.`,
+      `Artigos sobre ${category.name} no Escola de CRM.`,
   };
 }
 

@@ -16,25 +16,25 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Blog de Conteudo",
-    template: "%s | Blog de Conteudo",
+    default: "Escola de CRM",
+    template: "%s | Escola de CRM",
   },
   description:
-    "Artigos e conteudos otimizados para voce encontrar as melhores respostas.",
+    "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
-    siteName: "Blog de Conteudo",
-    title: "Blog de Conteudo",
+    siteName: "Escola de CRM",
+    title: "Escola de CRM",
     description:
-      "Artigos e conteudos otimizados para voce encontrar as melhores respostas.",
+      "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog de Conteudo",
+    title: "Escola de CRM",
     description:
-      "Artigos e conteudos otimizados para voce encontrar as melhores respostas.",
+      "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
   },
   robots: {
     index: true,
@@ -69,9 +69,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-white text-gray-900">
         <TopBanner
-          message="Conheca o CRM da Entur — Teste gratis por 14 dias"
-          link="#"
-          linkText="Comecar agora"
+          message="Domine CRM e Vendas — Conteudo gratuito para seu negocio crescer"
+          link="/categorias"
+          linkText="Explorar conteudos"
         />
         <Header />
         <main className="flex-1">{children}</main>

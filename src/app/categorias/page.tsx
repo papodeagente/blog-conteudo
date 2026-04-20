@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Categorias",
-  description: "Explore artigos por categoria no Blog de Conteudo.",
+  description: "Explore artigos por categoria no Escola de CRM.",
 };
 
 export default async function CategoriasPage() {

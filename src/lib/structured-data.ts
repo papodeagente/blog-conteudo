@@ -26,7 +26,7 @@ export function generateArticleSchema(data: ArticleData) {
     },
     publisher: {
       "@type": "Organization",
-      name: "Blog de Conteudo",
+      name: "Escola de CRM",
       logo: {
         "@type": "ImageObject",
         url: `${siteUrl}/logo.png`,
@@ -77,7 +77,7 @@ export function generateWebSiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "Blog de Conteudo",
+    name: "Escola de CRM",
     url: siteUrl,
     inLanguage: "pt-BR",
     potentialAction: {

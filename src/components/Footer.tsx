@@ -20,19 +20,18 @@ const columns = [
     ],
   },
   {
-    title: 'Entur',
+    title: 'Escola de CRM',
     links: [
       { label: 'Sobre', href: '/sobre' },
-      { label: 'Soluções', href: '/solucoes' },
-      { label: 'Planos', href: '/planos' },
+      { label: 'Contato', href: '/contato' },
     ],
   },
   {
-    title: 'Contato',
+    title: 'Redes Sociais',
     links: [
-      { label: 'LinkedIn', href: 'https://linkedin.com/company/entur' },
-      { label: 'Instagram', href: 'https://instagram.com/entur' },
-      { label: 'YouTube', href: 'https://youtube.com/@entur' },
+      { label: 'LinkedIn', href: 'https://linkedin.com/company/escoladecrm' },
+      { label: 'Instagram', href: 'https://instagram.com/escoladecrm' },
+      { label: 'YouTube', href: 'https://youtube.com/@escoladecrm' },
     ],
   },
 ];
@@ -66,7 +65,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-gray-700 text-center">
           <p className="text-sm text-gray-400">
-            &copy; 2026 Entur. Todos os direitos reservados.
+            &copy; 2026 Escola de CRM. Todos os direitos reservados.
           </p>
         </div>
       </div>

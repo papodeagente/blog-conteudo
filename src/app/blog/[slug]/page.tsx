@@ -213,10 +213,10 @@ export default async function PostPage({ params }: Props) {
           {/* Mid-article CTA */}
           <CTABanner
             variant="primary"
-            title="Guia Gratuito de CRM"
-            description="Baixe nosso guia completo e aprenda a implementar um CRM que realmente gera resultados para sua equipe."
-            buttonText="Baixar Gratis"
-            buttonLink="#"
+            title="Materiais Gratuitos da Escola de CRM"
+            description="Acesse guias, planilhas e checklists para aplicar CRM e vendas no seu negocio."
+            buttonText="Ver Materiais"
+            buttonLink="/materiais"
           />
 
           {/* Second part of content */}
@@ -330,7 +330,7 @@ export default async function PostPage({ params }: Props) {
         <CTABanner
           variant="secondary"
           title="Pronto para escalar suas vendas?"
-          description="Teste o CRM da Entur por 14 dias gratis e veja seus resultados melhorarem."
+          description="Acesse nossos guias, planilhas e materiais gratuitos para dominar vendas e CRM."
           buttonText="Comecar Teste Gratis"
           buttonLink="#"
         />

@@ -26,13 +26,13 @@ export default async function Home() {
       <section className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 text-center">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight">
-            O Portal de Vendas e CRM
+            Escola de CRM
             <br />
-            <span className="text-[#10B981]">do Brasil</span>
+            <span className="text-[#10B981]">Vendas na Pratica</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Artigos, guias e estrategias para transformar seu processo comercial.
-            Aprenda com especialistas e escale suas vendas.
+            Conteudo gratuito sobre CRM, vendas e gestao comercial
+            para pequenos e medios negocios. Aprenda e aplique hoje.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link

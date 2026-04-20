@@ -9,7 +9,7 @@ interface TopBannerProps {
   linkText: string;
 }
 
-const STORAGE_KEY = 'entur-top-banner-dismissed';
+const STORAGE_KEY = 'escoladecrm-top-banner-dismissed';
 
 export default function TopBanner({ message, link, linkText }: TopBannerProps) {
   const [visible, setVisible] = useState(false);

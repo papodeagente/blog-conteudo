@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: author.name,
-    description: author.bio || `Artigos de ${author.name} no Blog de Conteudo.`,
+    description: author.bio || `Artigos de ${author.name} no Escola de CRM.`,
   };
 }
 
