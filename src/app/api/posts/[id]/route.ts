@@ -36,6 +36,18 @@ export async function PUT(request: NextRequest, { params }: Props) {
   return NextResponse.json(post);
 }
 
+export async function PATCH(request: NextRequest, { params }: Props) {
+  const { id } = await params;
+  const body = await request.json();
+
+  const post = await prisma.post.update({
+    where: { id },
+    data: body,
+  });
+
+  return NextResponse.json(post);
+}
+
 export async function DELETE(_request: NextRequest, { params }: Props) {
   const { id } = await params;
   await prisma.post.delete({ where: { id } });
