@@ -29,11 +29,11 @@ export default function TopBanner({ message, link, linkText }: TopBannerProps) {
   if (!visible) return null;
 
   return (
-    <div className="bg-[#1A56DB] text-white">
+    <div className="bg-navy border-b border-gold/20 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-center gap-3 relative">
         <p className="text-sm text-center">
           {message}{' '}
-          <Link href={link} className="underline font-semibold hover:text-white/90 transition-colors">
+          <Link href={link} className="underline font-semibold text-gold hover:text-gold-light transition-colors">
             {linkText}
           </Link>
         </p>

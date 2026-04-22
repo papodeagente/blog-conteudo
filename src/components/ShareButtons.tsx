@@ -81,11 +81,11 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
 
       <button
         onClick={handleCopy}
-        className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-[#1A56DB] transition-colors relative"
+        className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-500 hover:text-gold transition-colors relative"
         aria-label="Copiar link"
       >
         {copied ? (
-          <svg className="w-5 h-5 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="w-5 h-5 text-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         ) : (
@@ -94,7 +94,7 @@ export default function ShareButtons({ url, title }: ShareButtonsProps) {
           </svg>
         )}
         {copied && (
-          <span className="absolute -bottom-7 text-xs font-medium text-[#10B981] whitespace-nowrap">
+          <span className="absolute -bottom-7 text-xs font-medium text-emerald whitespace-nowrap">
             Copiado!
           </span>
         )}

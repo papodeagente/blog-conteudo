@@ -51,11 +51,11 @@ export default async function CategoryPage({ params }: Props) {
         ]}
       />
 
-      <h1 className="text-3xl sm:text-4xl font-bold text-[#0F172A] mb-3">
+      <h1 className="text-3xl sm:text-4xl font-bold text-navy mb-3">
         {category.name}
       </h1>
       {category.description && (
-        <p className="text-[#334155] mb-10 max-w-2xl">{category.description}</p>
+        <p className="text-gray-600 mb-10 max-w-2xl">{category.description}</p>
       )}
 
       {category.posts.length === 0 ? (

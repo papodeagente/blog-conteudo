@@ -126,9 +126,14 @@ export default function MateriaisPage() {
                 <p className="mt-2 text-sm text-gray-500 leading-relaxed">
                   {mat.description}
                 </p>
-                <button className="mt-6 w-full px-4 py-3 rounded-lg bg-navy text-white text-sm font-semibold hover:bg-navy-light transition-colors">
+                <a
+                  href="#"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-6 block w-full px-4 py-3 rounded-lg bg-navy text-white text-sm font-semibold text-center hover:bg-navy-light transition-colors"
+                >
                   Baixar gratis
-                </button>
+                </a>
               </div>
             ))}
           </div>

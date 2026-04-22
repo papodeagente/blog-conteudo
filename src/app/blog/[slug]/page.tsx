@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
+import { extractHeadings, injectHeadingIds } from "@/lib/extract-headings";
 import {
   generateArticleSchema,
   generateBreadcrumbSchema,
@@ -12,6 +13,8 @@ import ShareButtons from "@/components/ShareButtons";
 import FAQAccordion from "@/components/FAQAccordion";
 import CTABanner from "@/components/CTABanner";
 import PostCard from "@/components/PostCard";
+import TableOfContents from "@/components/TableOfContents";
+import NewsletterWidget from "@/components/NewsletterWidget";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -112,19 +115,22 @@ export default async function PostPage({ params }: Props) {
   const wordCount = Math.ceil(post.content.length / 5);
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
+  // Inject heading IDs and extract headings for TOC
+  const contentWithIds = injectHeadingIds(post.content);
+  const headings = extractHeadings(contentWithIds);
+
   // Split content for mid-article CTA
   const contentParts = (() => {
-    const thirdPoint = Math.floor(post.content.length / 3);
-    // Find a closing tag near the 1/3 mark
-    const splitIndex = post.content.indexOf("</p>", thirdPoint);
+    const thirdPoint = Math.floor(contentWithIds.length / 3);
+    const splitIndex = contentWithIds.indexOf("</p>", thirdPoint);
     if (splitIndex !== -1) {
       const breakPoint = splitIndex + 4;
       return {
-        first: post.content.slice(0, breakPoint),
-        second: post.content.slice(breakPoint),
+        first: contentWithIds.slice(0, breakPoint),
+        second: contentWithIds.slice(breakPoint),
       };
     }
-    return { first: post.content, second: "" };
+    return { first: contentWithIds, second: "" };
   })();
 
   const postUrl = `${siteUrl}/blog/${post.slug}`;
@@ -159,13 +165,13 @@ export default async function PostPage({ params }: Props) {
 
       {/* Header */}
       <header className="max-w-3xl mx-auto mb-10">
-        <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-[#1A56DB]/10 text-[#1A56DB] mb-4">
+        <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-emerald/10 text-emerald mb-4">
           {post.category.name}
         </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#0F172A] leading-tight mb-4">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy leading-tight mb-4">
           {post.title}
         </h1>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-[#334155]">
+        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
           <span className="font-medium">{post.author.name}</span>
           {post.publishedAt && (
             <>
@@ -206,7 +212,7 @@ export default async function PostPage({ params }: Props) {
         <div>
           {/* First part of content */}
           <div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-[#0F172A] prose-a:text-[#1A56DB] prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
+            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-navy prose-a:text-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
             dangerouslySetInnerHTML={{ __html: contentParts.first }}
           />
 
@@ -222,7 +228,7 @@ export default async function PostPage({ params }: Props) {
           {/* Second part of content */}
           {contentParts.second && (
             <div
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-[#0F172A] prose-a:text-[#1A56DB] prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
+              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-navy prose-a:text-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
               dangerouslySetInnerHTML={{ __html: contentParts.second }}
             />
           )}
@@ -235,7 +241,7 @@ export default async function PostPage({ params }: Props) {
                   <a
                     key={tag.id}
                     href={`/tags/${tag.slug}`}
-                    className="bg-gray-100 text-[#334155] px-3 py-1 rounded-full text-sm hover:bg-gray-200 transition-colors"
+                    className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm hover:bg-gray-200 transition-colors"
                   >
                     #{tag.name}
                   </a>
@@ -247,7 +253,7 @@ export default async function PostPage({ params }: Props) {
           {/* FAQ Section */}
           {faqData && faqData.length > 0 && (
             <section className="mt-12">
-              <h2 className="text-2xl font-bold text-[#0F172A] mb-6">
+              <h2 className="text-2xl font-bold text-navy mb-6">
                 Perguntas Frequentes
               </h2>
               <FAQAccordion items={faqData} />
@@ -256,14 +262,14 @@ export default async function PostPage({ params }: Props) {
 
           {/* Key Questions */}
           {post.keyQuestions.length > 0 && (
-            <section className="mt-12 bg-[#F8FAFC] rounded-xl p-6 border border-gray-200">
-              <h2 className="text-xl font-bold text-[#0F172A] mb-4">
+            <section className="mt-12 bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <h2 className="text-xl font-bold text-navy mb-4">
                 Perguntas respondidas neste artigo
               </h2>
               <ul className="space-y-3">
                 {post.keyQuestions.map((q, i) => (
-                  <li key={i} className="flex gap-3 text-[#334155]">
-                    <span className="text-[#1A56DB] font-bold shrink-0">?</span>
+                  <li key={i} className="flex gap-3 text-gray-600">
+                    <span className="text-gold font-bold shrink-0">?</span>
                     <span>{q}</span>
                   </li>
                 ))}
@@ -288,15 +294,11 @@ export default async function PostPage({ params }: Props) {
           </div>
         </div>
 
-        {/* Right: Sidebar (TOC placeholder) */}
+        {/* Right: Sidebar — TOC + Newsletter */}
         <aside className="hidden lg:block">
-          <div className="sticky top-24 bg-[#F8FAFC] rounded-xl p-5 border border-gray-200">
-            <h4 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider mb-3">
-              Neste artigo
-            </h4>
-            <p className="text-xs text-gray-400">
-              Indice de conteudo em breve.
-            </p>
+          <div className="space-y-8">
+            <TableOfContents headings={headings} />
+            <NewsletterWidget />
           </div>
         </aside>
       </div>
@@ -304,7 +306,7 @@ export default async function PostPage({ params }: Props) {
       {/* Related Posts */}
       {relatedPosts.length > 0 && (
         <section className="max-w-5xl mx-auto mt-16 pt-12 border-t border-gray-200">
-          <h2 className="text-2xl font-bold text-[#0F172A] mb-8">
+          <h2 className="text-2xl font-bold text-navy mb-8">
             Artigos Relacionados
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

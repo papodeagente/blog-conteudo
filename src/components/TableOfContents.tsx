@@ -46,7 +46,7 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
 
   return (
     <nav className="sticky top-24" aria-label="Sumario">
-      <h4 className="text-sm font-bold text-[#0F172A] uppercase tracking-wider mb-3">
+      <h4 className="text-sm font-bold text-navy uppercase tracking-wider mb-3">
         Neste artigo
       </h4>
       <ul className="space-y-1 border-l-2 border-gray-200">
@@ -58,8 +58,8 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
                 heading.level === 3 ? 'pl-6' : 'pl-4'
               } ${
                 activeId === heading.id
-                  ? 'border-[#1A56DB] text-[#1A56DB] font-medium'
-                  : 'border-transparent text-[#334155] hover:text-[#1A56DB] hover:border-gray-400'
+                  ? 'border-gold text-gold font-medium'
+                  : 'border-transparent text-gray-600 hover:text-navy hover:border-gray-400'
               }`}
             >
               {heading.text}

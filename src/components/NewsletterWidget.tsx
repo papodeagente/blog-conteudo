@@ -15,24 +15,24 @@ export default function NewsletterWidget() {
 
   if (submitted) {
     return (
-      <div className="bg-[#F8FAFC] rounded-xl p-6 text-center">
-        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[#10B981]/10 flex items-center justify-center">
-          <svg className="w-6 h-6 text-[#10B981]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="bg-gray-50 rounded-xl p-6 text-center">
+        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald/10 flex items-center justify-center">
+          <svg className="w-6 h-6 text-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p className="text-sm font-semibold text-[#0F172A]">Inscrito com sucesso!</p>
-        <p className="text-xs text-[#334155] mt-1">Confira seu e-mail em breve.</p>
+        <p className="text-sm font-semibold text-navy">Inscrito com sucesso!</p>
+        <p className="text-xs text-gray-600 mt-1">Confira seu e-mail em breve.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#F8FAFC] rounded-xl p-6">
-      <h3 className="text-base font-bold text-[#0F172A]">
+    <div className="bg-gray-50 rounded-xl p-6">
+      <h3 className="text-base font-bold text-navy">
         Receba conteudos exclusivos
       </h3>
-      <p className="text-sm text-[#334155] mt-1">
+      <p className="text-sm text-gray-600 mt-1">
         Toda semana no seu e-mail
       </p>
 
@@ -43,11 +43,11 @@ export default function NewsletterWidget() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="seu@email.com"
-          className="w-full px-4 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-[#334155] placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#1A56DB] focus:border-transparent"
+          className="w-full px-4 py-2.5 text-sm rounded-lg border border-gray-300 bg-white text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent"
         />
         <button
           type="submit"
-          className="w-full px-4 py-2.5 text-sm font-semibold rounded-lg bg-[#1A56DB] text-white hover:bg-[#1648B8] transition-colors"
+          className="w-full px-4 py-2.5 text-sm font-semibold rounded-lg bg-navy text-white hover:bg-navy-light transition-colors"
         >
           Quero receber
         </button>

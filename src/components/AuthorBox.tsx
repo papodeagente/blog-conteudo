@@ -19,22 +19,22 @@ export default function AuthorBox({ name, bio, slug }: AuthorBoxProps) {
   const initials = getInitials(name);
 
   return (
-    <div className="bg-[#F8FAFC] rounded-xl p-6 flex flex-col sm:flex-row gap-5 items-start">
-      <div className="w-16 h-16 rounded-full bg-[#1A56DB] flex items-center justify-center text-white text-xl font-bold shrink-0">
+    <div className="bg-gray-50 rounded-xl p-6 flex flex-col sm:flex-row gap-5 items-start">
+      <div className="w-16 h-16 rounded-full bg-navy flex items-center justify-center text-white text-xl font-bold shrink-0">
         {initials}
       </div>
 
       <div className="flex-1">
         <Link
-          href={`/autores/${slug}`}
-          className="text-lg font-bold text-[#0F172A] hover:text-[#1A56DB] transition-colors"
+          href={`/autor/${slug}`}
+          className="text-lg font-bold text-navy hover:text-gold transition-colors"
         >
           {name}
         </Link>
-        <p className="text-sm text-[#1A56DB] font-medium mt-0.5">
+        <p className="text-sm text-gold font-medium mt-0.5">
           Especialista em Vendas e CRM
         </p>
-        <p className="mt-2 text-sm text-[#334155] leading-relaxed">
+        <p className="mt-2 text-sm text-gray-600 leading-relaxed">
           {bio}
         </p>
 

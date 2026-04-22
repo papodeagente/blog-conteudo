@@ -28,11 +28,11 @@ const config = {
     ),
   },
   example: {
-    borderColor: 'border-l-[#1A56DB]',
-    bgColor: 'bg-[#1A56DB]/5',
-    titleColor: 'text-[#1A56DB]',
+    borderColor: 'border-l-navy',
+    bgColor: 'bg-navy/5',
+    titleColor: 'text-navy',
     icon: (
-      <svg className="w-5 h-5 text-[#1A56DB]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <svg className="w-5 h-5 text-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
     ),
@@ -48,7 +48,7 @@ export default function CalloutBlock({ type, title, children }: CalloutBlockProp
         {icon}
         <span className={`text-sm font-bold ${titleColor}`}>{title}</span>
       </div>
-      <div className="text-sm text-[#334155] leading-relaxed">
+      <div className="text-sm text-gray-600 leading-relaxed">
         {children}
       </div>
     </div>

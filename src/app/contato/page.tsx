@@ -4,10 +4,41 @@ import { useState } from "react";
 
 export default function ContatoPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    setError("");
+
+    const form = e.currentTarget;
+    const data = {
+      nome: (form.elements.namedItem("nome") as HTMLInputElement).value,
+      email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      empresa: (form.elements.namedItem("empresa") as HTMLInputElement).value,
+      assunto: (form.elements.namedItem("assunto") as HTMLSelectElement).value,
+      mensagem: (form.elements.namedItem("mensagem") as HTMLTextAreaElement).value,
+    };
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!res.ok) {
+        const json = await res.json();
+        throw new Error(json.error || "Erro ao enviar mensagem.");
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao enviar mensagem.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,6 +91,12 @@ export default function ContatoPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="p-4 rounded-lg bg-red-50 border border-red-200 text-sm text-red-600">
+                      {error}
+                    </div>
+                  )}
+
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div>
                       <label className="block text-sm font-semibold text-navy mb-2">
@@ -67,6 +104,7 @@ export default function ContatoPage() {
                       </label>
                       <input
                         type="text"
+                        name="nome"
                         required
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
                         placeholder="Seu nome"
@@ -78,6 +116,7 @@ export default function ContatoPage() {
                       </label>
                       <input
                         type="email"
+                        name="email"
                         required
                         className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
                         placeholder="seu@email.com"
@@ -91,6 +130,7 @@ export default function ContatoPage() {
                     </label>
                     <input
                       type="text"
+                      name="empresa"
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
                       placeholder="Nome da sua empresa (opcional)"
                     />
@@ -100,7 +140,10 @@ export default function ContatoPage() {
                     <label className="block text-sm font-semibold text-navy mb-2">
                       Assunto
                     </label>
-                    <select className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent">
+                    <select
+                      name="assunto"
+                      className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent"
+                    >
                       <option>Quero saber mais sobre os programas</option>
                       <option>Consultoria personalizada</option>
                       <option>Parcerias</option>
@@ -113,6 +156,7 @@ export default function ContatoPage() {
                       Mensagem
                     </label>
                     <textarea
+                      name="mensagem"
                       rows={5}
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-300 text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald focus:border-transparent resize-none"
@@ -122,9 +166,10 @@ export default function ContatoPage() {
 
                   <button
                     type="submit"
-                    className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-emerald text-white font-semibold hover:bg-emerald-dark transition-colors"
+                    disabled={loading}
+                    className="w-full sm:w-auto px-8 py-3.5 rounded-lg bg-emerald text-white font-semibold hover:bg-emerald-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Enviar mensagem
+                    {loading ? "Enviando..." : "Enviar mensagem"}
                   </button>
                 </form>
               )}

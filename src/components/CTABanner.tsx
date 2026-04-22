@@ -15,11 +15,11 @@ export default function CTABanner({
   buttonLink,
   variant,
 }: CTABannerProps) {
-  const bgClass = variant === 'primary' ? 'bg-[#1A56DB]' : 'bg-[#10B981]';
+  const bgClass = variant === 'primary' ? 'bg-navy' : 'bg-emerald';
   const btnClass =
     variant === 'primary'
-      ? 'bg-white text-[#1A56DB] hover:bg-gray-100'
-      : 'bg-white text-[#10B981] hover:bg-gray-100';
+      ? 'border-2 border-gold text-gold hover:bg-gold/10'
+      : 'bg-navy text-white hover:bg-navy-light';
 
   return (
     <div className={`${bgClass} rounded-xl px-6 py-8 sm:px-10 sm:py-10 text-center sm:text-left`}>

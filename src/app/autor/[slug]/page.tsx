@@ -73,25 +73,25 @@ export default async function AuthorPage({ params }: Props) {
             className="w-28 h-28 rounded-full object-cover mx-auto mb-6 border-4 border-white shadow-lg"
           />
         ) : (
-          <div className="w-28 h-28 rounded-full bg-[#1A56DB] flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg">
+          <div className="w-28 h-28 rounded-full bg-navy flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg">
             {initials}
           </div>
         )}
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0F172A] mb-2">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-navy mb-2">
           {author.name}
         </h1>
-        <p className="text-[#1A56DB] font-semibold mb-4">
+        <p className="text-gold font-semibold mb-4">
           Especialista em Vendas e CRM
         </p>
         {author.bio && (
-          <p className="text-[#334155] max-w-xl mx-auto leading-relaxed">
+          <p className="text-gray-600 max-w-xl mx-auto leading-relaxed">
             {author.bio}
           </p>
         )}
         {author.email && (
           <a
             href={`mailto:${author.email}`}
-            className="inline-block mt-4 text-sm text-[#1A56DB] hover:text-[#1E40AF] transition-colors"
+            className="inline-block mt-4 text-sm text-gold hover:text-gold-light transition-colors"
           >
             {author.email}
           </a>
@@ -100,7 +100,7 @@ export default async function AuthorPage({ params }: Props) {
 
       {/* Author Posts */}
       <div>
-        <h2 className="text-2xl font-bold text-[#0F172A] mb-8">
+        <h2 className="text-2xl font-bold text-navy mb-8">
           Artigos de {author.name}
         </h2>
 

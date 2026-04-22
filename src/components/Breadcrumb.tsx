@@ -11,7 +11,7 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className="text-sm text-[#334155] mb-6">
+    <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-6">
       <ol className="flex items-center flex-wrap gap-1">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -24,11 +24,11 @@ export default function Breadcrumb({ items }: BreadcrumbProps) {
                 </span>
               )}
               {isLast || !item.href ? (
-                <span className="font-semibold text-[#0F172A]">{item.name}</span>
+                <span className="font-semibold text-navy">{item.name}</span>
               ) : (
                 <Link
                   href={item.href}
-                  className="hover:text-[#1A56DB] transition-colors"
+                  className="hover:text-gold transition-colors"
                 >
                   {item.name}
                 </Link>
