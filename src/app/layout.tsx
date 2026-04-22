@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { generateWebSiteSchema } from "@/lib/structured-data";
 import TopBanner from "@/components/TopBanner";
@@ -11,30 +11,37 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  weight: ["400", "500", "600", "700"],
+});
+
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Escola de CRM",
+    default: "Escola de CRM — Vendas na Prática",
     template: "%s | Escola de CRM",
   },
   description:
-    "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
+    "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
     siteName: "Escola de CRM",
-    title: "Escola de CRM",
+    title: "Escola de CRM — Vendas na Prática",
     description:
-      "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
+      "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Escola de CRM",
+    title: "Escola de CRM — Vendas na Prática",
     description:
-      "Aprenda vendas, CRM e gestao comercial com conteudos praticos para pequenos e medios negocios.",
+      "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
   },
   robots: {
     index: true,
@@ -58,7 +65,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+    >
       <head>
         <script
           type="application/ld+json"
@@ -69,9 +79,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-white text-gray-900">
         <TopBanner
-          message="Domine CRM e Vendas — Conteudo gratuito para seu negocio crescer"
-          link="/categorias"
-          linkText="Explorar conteudos"
+          message="Novo: Programa CRM na Pratica — Vagas limitadas para a proxima turma"
+          link="/programas"
+          linkText="Saiba mais"
         />
         <Header />
         <main className="flex-1">{children}</main>

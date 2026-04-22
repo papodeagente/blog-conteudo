@@ -4,16 +4,79 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --navy: #0A1628;
+  --navy-light: #111D33;
+  --gold: #C4975C;
+  --gold-light: #D4AA6A;
+  --emerald: #10B981;
+  --emerald-dark: #059669;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-navy: var(--navy);
+  --color-navy-light: var(--navy-light);
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-emerald: var(--emerald);
+  --color-emerald-dark: var(--emerald-dark);
   --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Scroll-triggered fade-in animation */
+.fade-in-up {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+
+.fade-in-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger children */
+.stagger-children > .fade-in-up:nth-child(1) { transition-delay: 0ms; }
+.stagger-children > .fade-in-up:nth-child(2) { transition-delay: 100ms; }
+.stagger-children > .fade-in-up:nth-child(3) { transition-delay: 200ms; }
+.stagger-children > .fade-in-up:nth-child(4) { transition-delay: 300ms; }
+.stagger-children > .fade-in-up:nth-child(5) { transition-delay: 400ms; }
+.stagger-children > .fade-in-up:nth-child(6) { transition-delay: 500ms; }
+
+/* Hero subtle grid pattern */
+.hero-pattern {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Card lift on hover */
+.card-lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Gold gradient text */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C4975C, #D4AA6A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
