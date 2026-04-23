@@ -73,6 +73,49 @@ html {
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
 }
 
+/* Prevent horizontal overflow globally */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Prose responsive overrides — prevent content overflow on mobile */
+.prose {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.prose pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.prose code {
+  word-break: break-all;
+}
+
+.prose pre code {
+  word-break: normal;
+}
+
+.prose img,
+.prose video,
+.prose iframe,
+.prose embed,
+.prose object {
+  max-width: 100%;
+  height: auto;
+}
+
+.prose table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.prose a {
+  word-break: break-all;
+}
+
 /* Gold gradient text */
 .text-gold-gradient {
   background: linear-gradient(135deg, #C4975C, #D4AA6A);

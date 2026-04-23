@@ -136,7 +136,7 @@ export default async function PostPage({ params }: Props) {
   const postUrl = `${siteUrl}/blog/${post.slug}`;
 
   return (
-    <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 overflow-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -209,7 +209,7 @@ export default async function PostPage({ params }: Props) {
         </aside>
 
         {/* Center: Content */}
-        <div>
+        <div className="min-w-0">
           {/* First part of content */}
           <div
             className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-navy prose-a:text-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
@@ -262,7 +262,7 @@ export default async function PostPage({ params }: Props) {
 
           {/* Key Questions */}
           {post.keyQuestions.length > 0 && (
-            <section className="mt-12 bg-gray-50 rounded-xl p-6 border border-gray-200">
+            <section className="mt-12 bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-200 overflow-hidden">
               <h2 className="text-xl font-bold text-navy mb-4">
                 Perguntas respondidas neste artigo
               </h2>
