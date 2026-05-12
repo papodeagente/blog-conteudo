@@ -1,21 +1,25 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Anton, Inter_Tight, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { generateWebSiteSchema } from "@/lib/structured-data";
 import TopBanner from "@/components/TopBanner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const inter = Inter({
-  variable: "--font-inter",
+const anton = Anton({
+  variable: "--font-anton",
+  subsets: ["latin"],
+  weight: ["400"],
+});
+
+const interTight = Inter_Tight({
+  variable: "--font-inter-tight",
   subsets: ["latin"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700"],
 });
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
@@ -23,25 +27,25 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Escola de CRM — Vendas na Prática",
+    default: "Escola de CRM — Bruno Barbosa",
     template: "%s | Escola de CRM",
   },
   description:
-    "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
+    "Bruno Barbosa instala CRM como sistema operacional comercial em empresas que precisam parar de viver de pico.",
   openGraph: {
     type: "website",
     locale: "pt_BR",
     url: siteUrl,
     siteName: "Escola de CRM",
-    title: "Escola de CRM — Vendas na Prática",
+    title: "Escola de CRM — Bruno Barbosa",
     description:
-      "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
+      "Bruno Barbosa instala CRM como sistema operacional comercial em empresas que precisam parar de viver de pico.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Escola de CRM — Vendas na Prática",
+    title: "Escola de CRM — Bruno Barbosa",
     description:
-      "Conteudo gratuito e programas praticos sobre CRM, vendas e gestao comercial para pequenos e medios negocios.",
+      "Bruno Barbosa instala CRM como sistema operacional comercial em empresas que precisam parar de viver de pico.",
   },
   robots: {
     index: true,
@@ -54,9 +58,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: siteUrl,
-  },
+  alternates: { canonical: siteUrl },
 };
 
 export default function RootLayout({
@@ -67,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${inter.variable} ${playfair.variable} h-full antialiased`}
+      className={`${anton.variable} ${interTight.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <head>
         <script
@@ -77,11 +79,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-full flex flex-col bg-white text-gray-900">
+      <body className="min-h-full flex flex-col">
         <TopBanner
-          message="Novo: Programa CRM na Pratica — Vagas limitadas para a proxima turma"
+          message="Edicao 2026 — Mentoria 1:1 com vagas abertas"
           link="/programas"
-          linkText="Saiba mais"
+          linkText="Reserve sua vaga"
         />
         <Header />
         <main className="flex-1">{children}</main>

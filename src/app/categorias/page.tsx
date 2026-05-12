@@ -6,74 +6,82 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Categorias",
-  description: "Explore artigos por categoria no Escola de CRM.",
+  description: "Explore artigos por categoria.",
 };
 
 export default async function CategoriasPage() {
   const categories = await prisma.category.findMany({
-    include: {
-      _count: { select: { posts: { where: { published: true } } } },
-    },
+    include: { _count: { select: { posts: { where: { published: true } } } } },
     orderBy: { name: "asc" },
   });
 
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-navy text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">
-              Explore por{" "}
-              <span className="font-serif italic font-normal text-gold">
-                Categoria
-              </span>
-            </h1>
-            <p className="mt-4 text-lg text-gray-300">
-              Nossos artigos organizados por tema. Encontre conteudos sobre
-              vendas, CRM, gestao comercial e muito mais.
-            </p>
-          </div>
+    <>
+      <section className="brutal-hero">
+        <div className="container-x">
+          <span className="eyebrow"><span className="dot" />Conteudo organizado</span>
+          <h1>Por <em>categoria.</em></h1>
+          <p>Encontre conteudos sobre vendas, CRM, gestao comercial e mais.</p>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-        {categories.length === 0 ? (
-          <p className="text-gray-500 text-center py-12">
-            Nenhuma categoria criada ainda.
-          </p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                href={`/categorias/${cat.slug}`}
-                className="group block bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg hover:border-gold/30 transition-all duration-300"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <h2 className="text-lg font-bold text-navy group-hover:text-gold transition-colors">
-                    {cat.name}
-                  </h2>
-                  <span className="bg-emerald/10 text-emerald text-xs font-bold px-2.5 py-1 rounded-full">
-                    {cat._count.posts}
-                  </span>
-                </div>
-                {cat.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                    {cat.description}
-                  </p>
-                )}
-                <div className="mt-4 text-sm font-semibold text-gold flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  Ver artigos
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
+      <section className="brutal-section">
+        <div className="container-x">
+          {categories.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '48px 0', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', opacity: 0.6 }}>
+              Nenhuma categoria.
+            </p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {categories.map((cat, i) => {
+                const bgs = ['var(--yellow)', 'var(--lime)', 'var(--cyan)', 'var(--pink)', 'var(--paper)', 'var(--paper)'];
+                const bg = bgs[i % bgs.length];
+                const isColored = bg !== 'var(--paper)';
+                const color = bg === 'var(--cyan)' || bg === 'var(--pink)' ? '#fff' : 'var(--ink)';
+                return (
+                  <Link
+                    key={cat.id}
+                    href={`/categorias/${cat.slug}`}
+                    className="block transition-transform hover:-translate-y-1 hover:-translate-x-1"
+                    style={{
+                      background: bg,
+                      color,
+                      border: 'var(--border-thick)',
+                      boxShadow: 'var(--shadow)',
+                      padding: 28,
+                    }}
+                  >
+                    <div className="flex items-start justify-between gap-4 mb-4">
+                      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 26, textTransform: 'uppercase', lineHeight: 1, margin: 0 }}>
+                        {cat.name}
+                      </h2>
+                      <span style={{
+                        background: isColored ? 'var(--ink)' : 'var(--magenta)',
+                        color: '#fff',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        padding: '4px 8px',
+                        flexShrink: 0,
+                      }}>
+                        {cat._count.posts}
+                      </span>
+                    </div>
+                    {cat.description && (
+                      <p style={{ fontSize: 14, lineHeight: 1.55, marginBottom: 14 }}>
+                        {cat.description}
+                      </p>
+                    )}
+                    <span style={{ fontFamily: 'var(--font-mono)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 700 }}>
+                      Ver artigos →
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

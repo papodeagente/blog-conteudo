@@ -25,7 +25,7 @@ User-agent: ClaudeBot
 Allow: /
 
 # Host
-Host: http://187.127.6.135
+Host: http://localhost:3000
 
 # Sitemaps
-Sitemap: http://187.127.6.135/sitemap.xml
+Sitemap: http://localhost:3000/sitemap.xml

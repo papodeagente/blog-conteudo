@@ -14,12 +14,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const category = await prisma.category.findUnique({ where: { slug } });
   if (!category) return {};
-
   return {
     title: category.name,
-    description:
-      category.description ||
-      `Artigos sobre ${category.name} no Escola de CRM.`,
+    description: category.description || `Artigos sobre ${category.name}.`,
   };
 }
 
@@ -31,54 +28,54 @@ export default async function CategoryPage({ params }: Props) {
       posts: {
         where: { published: true },
         orderBy: { publishedAt: "desc" },
-        include: {
-          author: true,
-          category: true,
-        },
+        include: { author: true, category: true },
       },
     },
   });
-
   if (!category) notFound();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      <Breadcrumb
-        items={[
-          { name: "Home", href: "/" },
-          { name: "Categorias", href: "/categorias" },
-          { name: category.name },
-        ]}
-      />
-
-      <h1 className="text-3xl sm:text-4xl font-bold text-navy mb-3">
-        {category.name}
-      </h1>
-      {category.description && (
-        <p className="text-gray-600 mb-10 max-w-2xl">{category.description}</p>
-      )}
-
-      {category.posts.length === 0 ? (
-        <p className="text-gray-500 text-center py-12">
-          Nenhum artigo nesta categoria ainda.
-        </p>
-      ) : (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {category.posts.map((post) => (
-            <PostCard
-              key={post.id}
-              title={post.title}
-              slug={post.slug}
-              excerpt={post.excerpt || ""}
-              coverImage={post.coverImage || undefined}
-              publishedAt={post.publishedAt?.toISOString() || post.createdAt.toISOString()}
-              authorName={post.author.name}
-              categoryName={category.name}
-              categorySlug={category.slug}
-            />
-          ))}
+    <>
+      <section className="brutal-hero">
+        <div className="container-x">
+          <Breadcrumb
+            items={[
+              { name: "Home", href: "/" },
+              { name: "Categorias", href: "/categorias" },
+              { name: category.name },
+            ]}
+          />
+          <span className="eyebrow"><span className="dot" />Categoria</span>
+          <h1>{category.name}<em>.</em></h1>
+          {category.description && <p>{category.description}</p>}
         </div>
-      )}
-    </div>
+      </section>
+
+      <section className="brutal-section">
+        <div className="container-x">
+          {category.posts.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '48px 0', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', opacity: 0.6 }}>
+              Nenhum artigo nesta categoria.
+            </p>
+          ) : (
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {category.posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  title={post.title}
+                  slug={post.slug}
+                  excerpt={post.excerpt || ""}
+                  coverImage={post.coverImage || undefined}
+                  publishedAt={post.publishedAt?.toISOString() || post.createdAt.toISOString()}
+                  authorName={post.author.name}
+                  categoryName={category.name}
+                  categorySlug={category.slug}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }

@@ -10,13 +10,8 @@ interface SearchPost {
   slug: string;
   excerpt: string | null;
   publishedAt: string | null;
-  category: {
-    name: string;
-    slug: string;
-  };
-  author: {
-    name: string;
-  };
+  category: { name: string; slug: string };
+  author: { name: string };
 }
 
 function BuscaContent() {
@@ -31,121 +26,114 @@ function BuscaContent() {
 
   useEffect(() => {
     if (!query) {
-      setResults([]);
-      setSearched(false);
-      return;
+      setResults([]); setSearched(false); return;
     }
-
     const fetchResults = async () => {
       setLoading(true);
       try {
         const res = await fetch(`/api/posts?search=${encodeURIComponent(query)}&published=true`);
         const data = await res.json();
         setResults(data.posts || []);
-      } catch {
-        setResults([]);
-      } finally {
-        setLoading(false);
-        setSearched(true);
-      }
+      } catch { setResults([]); }
+      finally { setLoading(false); setSearched(true); }
     };
-
     fetchResults();
   }, [query]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      router.push(`/busca?q=${encodeURIComponent(inputValue.trim())}`);
-    }
+    if (inputValue.trim()) router.push(`/busca?q=${encodeURIComponent(inputValue.trim())}`);
   };
 
   return (
     <>
       <form onSubmit={handleSubmit} className="mb-10">
-        <div className="relative">
+        <div className="flex" style={{ border: 'var(--border-thick)', boxShadow: 'var(--shadow)' }}>
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Digite sua busca..."
-            className="w-full px-5 py-4 pr-14 rounded-xl border border-gray-300 text-navy placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gold focus:border-transparent text-lg"
+            className="flex-1"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: 16,
+              padding: '18px 20px',
+              border: 'none', outline: 'none',
+              background: 'var(--paper)',
+            }}
           />
-          <button
-            type="submit"
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-gold transition-colors"
-            aria-label="Buscar"
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+          <button type="submit" className="btn btn-pink" style={{ borderLeft: 'var(--border)', boxShadow: 'none' }}>
+            Buscar
           </button>
         </div>
       </form>
 
       {loading && (
-        <div className="text-center py-12">
-          <div className="inline-block w-8 h-8 border-4 border-gray-200 border-t-gold rounded-full animate-spin" />
-          <p className="mt-3 text-gray-600">Buscando...</p>
+        <div className="text-center py-12" style={{ fontFamily: 'var(--font-mono)', textTransform: 'uppercase' }}>
+          Buscando...
         </div>
       )}
 
       {!loading && searched && results.length === 0 && (
         <div className="text-center py-12">
-          <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <p className="text-lg font-semibold text-navy mb-1">Nenhum resultado encontrado</p>
-          <p className="text-gray-600">
-            Tente buscar com termos diferentes ou mais gerais.
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, textTransform: 'uppercase', marginBottom: 8 }}>
+            Nada encontrado.
+          </div>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 13, textTransform: 'uppercase', opacity: 0.6 }}>
+            Tente outros termos.
           </p>
         </div>
       )}
 
       {!loading && results.length > 0 && (
-        <div className="space-y-6">
-          <p className="text-sm text-gray-600">
-            {results.length} resultado{results.length !== 1 ? "s" : ""} encontrado{results.length !== 1 ? "s" : ""}
+        <div className="space-y-5">
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+            {results.length} resultado{results.length !== 1 ? "s" : ""}
           </p>
           {results.map((post) => (
             <article
               key={post.id}
-              className="border border-gray-200 rounded-xl p-5 hover:shadow-md transition-shadow"
+              className="block transition-transform hover:-translate-x-1 hover:-translate-y-1"
+              style={{
+                background: 'var(--paper)',
+                border: 'var(--border)',
+                boxShadow: 'var(--shadow-sm)',
+                padding: 22,
+              }}
             >
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-3">
                 <Link
                   href={`/categorias/${post.category.slug}`}
-                  className="text-xs font-semibold text-emerald bg-emerald/10 px-2.5 py-0.5 rounded-full"
+                  style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: 11,
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    background: 'var(--ink)',
+                    color: 'var(--bg)',
+                    padding: '4px 8px',
+                  }}
                 >
                   {post.category.name}
                 </Link>
                 {post.publishedAt && (
-                  <time
-                    dateTime={post.publishedAt}
-                    className="text-xs text-gray-400"
-                  >
-                    {new Intl.DateTimeFormat("pt-BR", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    }).format(new Date(post.publishedAt))}
+                  <time style={{ fontFamily: 'var(--font-mono)', fontSize: 11, opacity: 0.6, textTransform: 'uppercase' }}>
+                    {new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "short", year: "numeric" }).format(new Date(post.publishedAt))}
                   </time>
                 )}
               </div>
               <Link
                 href={`/blog/${post.slug}`}
-                className="text-lg font-bold text-navy hover:text-gold transition-colors"
+                className="hover:underline"
+                style={{ fontFamily: 'var(--font-display)', fontSize: 22, textTransform: 'uppercase', lineHeight: 1.1, display: 'block' }}
               >
                 {post.title}
               </Link>
               {post.excerpt && (
-                <p className="mt-1 text-sm text-gray-600 line-clamp-2">
-                  {post.excerpt}
-                </p>
+                <p style={{ marginTop: 8, fontSize: 14, lineHeight: 1.55 }}>{post.excerpt}</p>
               )}
-              <p className="mt-2 text-xs text-gray-400">
-                Por {post.author.name}
-              </p>
             </article>
           ))}
         </div>
@@ -156,13 +144,21 @@ function BuscaContent() {
 
 export default function BuscaPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-      <h1 className="text-3xl sm:text-4xl font-bold text-navy mb-8">
-        Buscar Artigos
-      </h1>
-      <Suspense fallback={<div className="text-center py-12 text-gray-400">Carregando...</div>}>
-        <BuscaContent />
-      </Suspense>
-    </div>
+    <>
+      <section className="brutal-hero">
+        <div className="container-x">
+          <span className="eyebrow"><span className="dot" />Busca</span>
+          <h1>Encontre o <em>conteudo.</em></h1>
+        </div>
+      </section>
+
+      <section className="brutal-section">
+        <div className="container-x max-w-3xl">
+          <Suspense fallback={<div className="text-center py-12" style={{ fontFamily: 'var(--font-mono)' }}>Carregando...</div>}>
+            <BuscaContent />
+          </Suspense>
+        </div>
+      </section>
+    </>
   );
 }

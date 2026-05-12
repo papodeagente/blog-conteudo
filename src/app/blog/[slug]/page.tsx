@@ -21,7 +21,6 @@ interface Props {
 }
 
 export const dynamic = "force-dynamic";
-
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,19 +29,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     where: { slug },
     include: { author: true, category: true },
   });
-
   if (!post) return {};
-
   const title = post.metaTitle || post.title;
   const description = post.metaDescription || post.excerpt || "";
-
   return {
     title,
     description,
     openGraph: {
-      title,
-      description,
-      type: "article",
+      title, description, type: "article",
       publishedTime: post.publishedAt?.toISOString(),
       modifiedTime: post.updatedAt.toISOString(),
       authors: [post.author.name],
@@ -50,15 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: post.locale.replace("-", "_"),
       images: post.ogImage ? [{ url: post.ogImage }] : [],
     },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: post.ogImage ? [post.ogImage] : [],
-    },
-    alternates: {
-      canonical: post.canonicalUrl || `${siteUrl}/blog/${post.slug}`,
-    },
+    twitter: { card: "summary_large_image", title, description, images: post.ogImage ? [post.ogImage] : [] },
+    alternates: { canonical: post.canonicalUrl || `${siteUrl}/blog/${post.slug}` },
   };
 }
 
@@ -66,28 +53,15 @@ export default async function PostPage({ params }: Props) {
   const { slug } = await params;
   const post = await prisma.post.findUnique({
     where: { slug, published: true },
-    include: {
-      author: true,
-      category: true,
-      tags: { include: { tag: true } },
-    },
+    include: { author: true, category: true, tags: { include: { tag: true } } },
   });
-
   if (!post) notFound();
 
-  // Related posts: same category, exclude current
   const relatedPosts = await prisma.post.findMany({
-    where: {
-      published: true,
-      categoryId: post.categoryId,
-      id: { not: post.id },
-    },
+    where: { published: true, categoryId: post.categoryId, id: { not: post.id } },
     orderBy: { publishedAt: "desc" },
     take: 3,
-    include: {
-      author: true,
-      category: true,
-    },
+    include: { author: true, category: true },
   });
 
   const articleSchema = generateArticleSchema({
@@ -100,35 +74,25 @@ export default async function PostPage({ params }: Props) {
     coverImage: post.coverImage || undefined,
     category: post.category.name,
   });
-
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: "Home", url: "/" },
     { name: post.category.name, url: `/categorias/${post.category.slug}` },
     { name: post.title, url: `/blog/${post.slug}` },
   ]);
+  const faqData = post.faqSchema as { question: string; answer: string }[] | null;
 
-  const faqData = post.faqSchema as
-    | { question: string; answer: string }[]
-    | null;
-
-  // Estimated reading time
   const wordCount = Math.ceil(post.content.length / 5);
   const readingTime = Math.max(1, Math.ceil(wordCount / 200));
 
-  // Inject heading IDs and extract headings for TOC
   const contentWithIds = injectHeadingIds(post.content);
   const headings = extractHeadings(contentWithIds);
 
-  // Split content for mid-article CTA
   const contentParts = (() => {
     const thirdPoint = Math.floor(contentWithIds.length / 3);
     const splitIndex = contentWithIds.indexOf("</p>", thirdPoint);
     if (splitIndex !== -1) {
       const breakPoint = splitIndex + 4;
-      return {
-        first: contentWithIds.slice(0, breakPoint),
-        second: contentWithIds.slice(breakPoint),
-      };
+      return { first: contentWithIds.slice(0, breakPoint), second: contentWithIds.slice(breakPoint) };
     }
     return { first: contentWithIds, second: "" };
   })();
@@ -136,207 +100,192 @@ export default async function PostPage({ params }: Props) {
   const postUrl = `${siteUrl}/blog/${post.slug}`;
 
   return (
-    <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 overflow-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+    <article>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
       {faqData && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(generateFAQSchema(faqData)),
-          }}
-        />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(generateFAQSchema(faqData)) }} />
       )}
 
-      {/* Breadcrumb */}
-      <Breadcrumb
-        items={[
-          { name: "Home", href: "/" },
-          { name: post.category.name, href: `/categorias/${post.category.slug}` },
-          { name: post.title },
-        ]}
-      />
-
-      {/* Header */}
-      <header className="max-w-3xl mx-auto mb-10">
-        <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-emerald/10 text-emerald mb-4">
-          {post.category.name}
-        </span>
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-navy leading-tight mb-4">
-          {post.title}
-        </h1>
-        <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
-          <span className="font-medium">{post.author.name}</span>
-          {post.publishedAt && (
-            <>
-              <span className="text-gray-300">|</span>
-              <time dateTime={post.publishedAt.toISOString()}>
-                {new Intl.DateTimeFormat("pt-BR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                }).format(post.publishedAt)}
-              </time>
-            </>
-          )}
-          <span className="text-gray-300">|</span>
-          <span>{readingTime} min de leitura</span>
+      {/* HERO */}
+      <section className="brutal-hero">
+        <div className="container-x">
+          <Breadcrumb
+            items={[
+              { name: "Home", href: "/" },
+              { name: "Blog", href: "/blog" },
+              { name: post.category.name, href: `/categorias/${post.category.slug}` },
+              { name: post.title },
+            ]}
+          />
+          <span className="eyebrow"><span className="dot" />{post.category.name}</span>
+          <h1>{post.title}</h1>
+          <div className="flex flex-wrap items-center gap-3 mt-4" style={{ fontFamily: 'var(--font-mono)', fontSize: 12, textTransform: 'uppercase', letterSpacing: '0.06em', opacity: 0.85 }}>
+            <span>Por {post.author.name}</span>
+            {post.publishedAt && (
+              <>
+                <span style={{ color: 'var(--magenta)' }}>·</span>
+                <time dateTime={post.publishedAt.toISOString()}>
+                  {new Intl.DateTimeFormat("pt-BR", { day: "numeric", month: "long", year: "numeric" }).format(post.publishedAt)}
+                </time>
+              </>
+            )}
+            <span style={{ color: 'var(--magenta)' }}>·</span>
+            <span>{readingTime} min</span>
+          </div>
         </div>
-      </header>
+      </section>
 
-      {/* Cover Image */}
+      {/* COVER */}
       {post.coverImage && (
-        <div className="max-w-4xl mx-auto mb-10">
-          <img
-            src={post.coverImage}
-            alt={post.title}
-            className="w-full rounded-xl object-cover max-h-[480px]"
-          />
+        <div className="container-x" style={{ marginTop: -40, position: 'relative', zIndex: 2 }}>
+          <div
+            style={{
+              border: 'var(--border-thick)',
+              boxShadow: 'var(--shadow-lg)',
+              background: 'var(--paper)',
+              overflow: 'hidden',
+              maxHeight: 520,
+            }}
+          >
+            <img
+              src={post.coverImage}
+              alt={post.title}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', maxHeight: 520, display: 'block' }}
+            />
+          </div>
         </div>
       )}
 
-      {/* Three-column layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-[64px_1fr_240px] gap-8 max-w-5xl mx-auto">
-        {/* Left: Share Buttons (sticky) */}
-        <aside className="hidden lg:block">
-          <ShareButtons url={postUrl} title={post.title} />
-        </aside>
+      {/* CONTENT */}
+      <section className="brutal-section">
+        <div className="container-x">
+          <div className="grid grid-cols-1 lg:grid-cols-[64px_1fr_260px] gap-10">
+            <aside className="hidden lg:block">
+              <ShareButtons url={postUrl} title={post.title} />
+            </aside>
 
-        {/* Center: Content */}
-        <div className="min-w-0">
-          {/* First part of content */}
-          <div
-            className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-navy prose-a:text-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
-            dangerouslySetInnerHTML={{ __html: contentParts.first }}
-          />
+            <div className="min-w-0">
+              <div
+                className="brutal-prose"
+                dangerouslySetInnerHTML={{ __html: contentParts.first }}
+              />
 
-          {/* Mid-article CTA */}
-          <CTABanner
-            variant="primary"
-            title="Materiais Gratuitos da Escola de CRM"
-            description="Acesse guias, planilhas e checklists para aplicar CRM e vendas no seu negocio."
-            buttonText="Ver Materiais"
-            buttonLink="/materiais"
-          />
+              <CTABanner
+                variant="primary"
+                title="Materiais Gratuitos"
+                description="Acesse guias, planilhas e checklists para aplicar CRM e vendas no seu negocio."
+                buttonText="Ver materiais"
+                buttonLink="/materiais"
+              />
 
-          {/* Second part of content */}
-          {contentParts.second && (
-            <div
-              className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-navy prose-a:text-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
-              dangerouslySetInnerHTML={{ __html: contentParts.second }}
-            />
-          )}
+              {contentParts.second && (
+                <div
+                  className="brutal-prose"
+                  dangerouslySetInnerHTML={{ __html: contentParts.second }}
+                />
+              )}
 
-          {/* Tags */}
-          {post.tags.length > 0 && (
-            <div className="mt-10 pt-6 border-t border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map(({ tag }) => (
-                  <a
-                    key={tag.id}
-                    href={`/tags/${tag.slug}`}
-                    className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-sm hover:bg-gray-200 transition-colors"
-                  >
-                    #{tag.name}
-                  </a>
-                ))}
+              {post.tags.length > 0 && (
+                <div className="mt-10 flex flex-wrap gap-2">
+                  {post.tags.map(({ tag }) => (
+                    <a key={tag.id} href={`/tags/${tag.slug}`} className="pill">
+                      #{tag.name}
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {faqData && faqData.length > 0 && (
+                <section className="mt-14">
+                  <span className="section-num">PERGUNTAS FREQUENTES</span>
+                  <h2 className="section-title" style={{ fontSize: 'clamp(28px, 4vw, 44px)', marginTop: 12, marginBottom: 24 }}>
+                    Duvidas comuns.
+                  </h2>
+                  <FAQAccordion items={faqData} />
+                </section>
+              )}
+
+              {post.keyQuestions.length > 0 && (
+                <section
+                  className="mt-12"
+                  style={{
+                    background: 'var(--yellow)',
+                    border: 'var(--border-thick)',
+                    boxShadow: 'var(--shadow)',
+                    padding: 28,
+                  }}
+                >
+                  <div style={{ fontFamily: 'var(--font-mono)', fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 14 }}>
+                    Perguntas respondidas
+                  </div>
+                  <ul className="space-y-3">
+                    {post.keyQuestions.map((q, i) => (
+                      <li key={i} className="flex gap-3" style={{ fontSize: 15 }}>
+                        <span style={{ color: 'var(--magenta)', fontWeight: 800, flexShrink: 0 }}>▸</span>
+                        <span>{q}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+
+              <div className="lg:hidden mt-10 flex justify-center">
+                <ShareButtons url={postUrl} title={post.title} />
+              </div>
+
+              <div className="mt-14">
+                <AuthorBox name={post.author.name} bio={post.author.bio || ""} slug={post.author.slug} />
               </div>
             </div>
-          )}
 
-          {/* FAQ Section */}
-          {faqData && faqData.length > 0 && (
-            <section className="mt-12">
-              <h2 className="text-2xl font-bold text-navy mb-6">
-                Perguntas Frequentes
-              </h2>
-              <FAQAccordion items={faqData} />
-            </section>
-          )}
-
-          {/* Key Questions */}
-          {post.keyQuestions.length > 0 && (
-            <section className="mt-12 bg-gray-50 rounded-xl p-4 sm:p-6 border border-gray-200 overflow-hidden">
-              <h2 className="text-xl font-bold text-navy mb-4">
-                Perguntas respondidas neste artigo
-              </h2>
-              <ul className="space-y-3">
-                {post.keyQuestions.map((q, i) => (
-                  <li key={i} className="flex gap-3 text-gray-600">
-                    <span className="text-gold font-bold shrink-0">?</span>
-                    <span>{q}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
-          {/* Mobile Share Buttons */}
-          <div className="lg:hidden mt-8 flex justify-center">
-            <div className="flex gap-3">
-              <ShareButtons url={postUrl} title={post.title} />
-            </div>
-          </div>
-
-          {/* Author Box */}
-          <div className="mt-12">
-            <AuthorBox
-              name={post.author.name}
-              bio={post.author.bio || ""}
-              slug={post.author.slug}
-            />
+            <aside className="hidden lg:block">
+              <div className="space-y-6">
+                <TableOfContents headings={headings} />
+                <NewsletterWidget />
+              </div>
+            </aside>
           </div>
         </div>
+      </section>
 
-        {/* Right: Sidebar — TOC + Newsletter */}
-        <aside className="hidden lg:block">
-          <div className="space-y-8">
-            <TableOfContents headings={headings} />
-            <NewsletterWidget />
-          </div>
-        </aside>
-      </div>
-
-      {/* Related Posts */}
       {relatedPosts.length > 0 && (
-        <section className="max-w-5xl mx-auto mt-16 pt-12 border-t border-gray-200">
-          <h2 className="text-2xl font-bold text-navy mb-8">
-            Artigos Relacionados
-          </h2>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {relatedPosts.map((related) => (
-              <PostCard
-                key={related.id}
-                title={related.title}
-                slug={related.slug}
-                excerpt={related.excerpt || ""}
-                coverImage={related.coverImage || undefined}
-                publishedAt={related.publishedAt?.toISOString() || related.createdAt.toISOString()}
-                authorName={related.author.name}
-                categoryName={related.category.name}
-                categorySlug={related.category.slug}
-              />
-            ))}
+        <section className="brutal-section" style={{ background: 'var(--paper)', borderTop: 'var(--border-thick)' }}>
+          <div className="container-x">
+            <span className="section-num">RELACIONADOS</span>
+            <h2 className="section-title" style={{ fontSize: 'clamp(32px, 4.5vw, 56px)', marginTop: 12, marginBottom: 32 }}>
+              Continue lendo.
+            </h2>
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {relatedPosts.map((related) => (
+                <PostCard
+                  key={related.id}
+                  title={related.title}
+                  slug={related.slug}
+                  excerpt={related.excerpt || ""}
+                  coverImage={related.coverImage || undefined}
+                  publishedAt={related.publishedAt?.toISOString() || related.createdAt.toISOString()}
+                  authorName={related.author.name}
+                  categoryName={related.category.name}
+                  categorySlug={related.category.slug}
+                />
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      {/* Final CTA */}
-      <div className="max-w-3xl mx-auto mt-12">
-        <CTABanner
-          variant="secondary"
-          title="Pronto para escalar suas vendas?"
-          description="Acesse nossos guias, planilhas e materiais gratuitos para dominar vendas e CRM."
-          buttonText="Comecar Teste Gratis"
-          buttonLink="#"
-        />
-      </div>
+      <section className="brutal-section newsletter-sec">
+        <div className="container-x">
+          <CTABanner
+            variant="secondary"
+            title="Vamos conversar?"
+            description="Agende uma chamada de diagnostico — sem compromisso. Apresento como funciona a mentoria e se faz sentido pro seu momento."
+            buttonText="Agendar chamada"
+            buttonLink="/contato"
+          />
+        </div>
+      </section>
     </article>
   );
 }

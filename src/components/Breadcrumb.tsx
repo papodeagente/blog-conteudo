@@ -11,25 +11,30 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className="text-sm text-gray-500 mb-6">
-      <ol className="flex items-center flex-wrap gap-1">
+    <nav
+      aria-label="Breadcrumb"
+      className="mb-8"
+      style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: 12,
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+      }}
+    >
+      <ol className="flex items-center flex-wrap gap-2">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
-
           return (
-            <li key={index} className="flex items-center gap-1">
+            <li key={index} className="flex items-center gap-2">
               {index > 0 && (
-                <span className="text-gray-400 mx-1" aria-hidden="true">
-                  &gt;
-                </span>
+                <span style={{ color: 'var(--magenta)' }} aria-hidden="true">/</span>
               )}
               {isLast || !item.href ? (
-                <span className="font-semibold text-navy">{item.name}</span>
+                <span style={{ background: 'var(--ink)', color: 'var(--bg)', padding: '3px 7px' }}>
+                  {item.name}
+                </span>
               ) : (
-                <Link
-                  href={item.href}
-                  className="hover:text-gold transition-colors"
-                >
+                <Link href={item.href} className="hover:bg-yellow hover:px-1 transition-all">
                   {item.name}
                 </Link>
               )}

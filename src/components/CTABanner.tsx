@@ -15,23 +15,35 @@ export default function CTABanner({
   buttonLink,
   variant,
 }: CTABannerProps) {
-  const bgClass = variant === 'primary' ? 'bg-navy' : 'bg-emerald';
-  const btnClass =
-    variant === 'primary'
-      ? 'border-2 border-gold text-gold hover:bg-gold/10'
-      : 'bg-navy text-white hover:bg-navy-light';
+  const bg = variant === 'primary' ? 'var(--ink)' : 'var(--pink)';
+  const fg = variant === 'primary' ? 'var(--bg)' : '#fff';
+  const btnClass = variant === 'primary' ? 'btn btn-pink' : 'btn btn-yellow';
 
   return (
-    <div className={`${bgClass} rounded-xl px-4 py-6 sm:px-10 sm:py-10 text-center sm:text-left my-8 overflow-hidden`}>
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-        <div className="flex-1">
-          <h3 className="text-xl sm:text-2xl font-bold text-white">{title}</h3>
-          <p className="mt-2 text-white/90 text-sm sm:text-base">{description}</p>
+    <div
+      className="my-10 p-8 sm:p-10 relative overflow-hidden"
+      style={{
+        background: bg,
+        color: fg,
+        border: 'var(--border-thick)',
+        boxShadow: 'var(--shadow-lg)',
+      }}
+    >
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
+        <div className="flex-1 min-w-0">
+          <h3
+            className="uppercase mb-3"
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(24px, 3.4vw, 36px)',
+              lineHeight: 1,
+            }}
+          >
+            {title}
+          </h3>
+          <p style={{ fontSize: 16, opacity: 0.9, maxWidth: '60ch' }}>{description}</p>
         </div>
-        <Link
-          href={buttonLink}
-          className={`${btnClass} inline-flex items-center px-6 py-3 rounded-lg font-semibold text-sm transition-colors sm:shrink-0 w-full sm:w-auto justify-center`}
-        >
+        <Link href={buttonLink} className={`${btnClass} sm:shrink-0 w-full sm:w-auto justify-center`}>
           {buttonText}
         </Link>
       </div>

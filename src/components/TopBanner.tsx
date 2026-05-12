@@ -16,9 +16,7 @@ export default function TopBanner({ message, link, linkText }: TopBannerProps) {
 
   useEffect(() => {
     const dismissed = localStorage.getItem(STORAGE_KEY);
-    if (!dismissed) {
-      setVisible(true);
-    }
+    if (!dismissed) setVisible(true);
   }, []);
 
   const handleClose = () => {
@@ -29,22 +27,29 @@ export default function TopBanner({ message, link, linkText }: TopBannerProps) {
   if (!visible) return null;
 
   return (
-    <div className="bg-navy border-b border-gold/20 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-center gap-3 relative">
-        <p className="text-sm text-center">
+    <div
+      className="w-full border-b-4 border-ink"
+      style={{ background: 'var(--ink)', color: 'var(--bg)', fontFamily: 'var(--font-mono)' }}
+    >
+      <div className="max-w-[1320px] mx-auto px-4 sm:px-8 py-2.5 flex items-center justify-center gap-3 relative">
+        <p className="text-xs sm:text-sm text-center uppercase tracking-wider">
           {message}{' '}
-          <Link href={link} className="underline font-semibold text-gold hover:text-gold-light transition-colors">
-            {linkText}
+          <Link
+            href={link}
+            className="underline font-bold"
+            style={{ color: 'var(--yellow)' }}
+          >
+            {linkText} →
           </Link>
         </p>
 
         <button
           onClick={handleClose}
-          className="absolute right-4 p-1 rounded hover:bg-white/10 transition-colors"
+          className="absolute right-3 sm:right-4 p-1 hover:opacity-70 transition-opacity"
           aria-label="Fechar banner"
         >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>

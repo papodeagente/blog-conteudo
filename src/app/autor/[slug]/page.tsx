@@ -15,10 +15,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const author = await prisma.author.findUnique({ where: { slug } });
   if (!author) return {};
-
   return {
     title: author.name,
-    description: author.bio || `Artigos de ${author.name} no Escola de CRM.`,
+    description: author.bio || `Artigos de ${author.name}.`,
   };
 }
 
@@ -30,22 +29,14 @@ export default async function AuthorPage({ params }: Props) {
       posts: {
         where: { published: true },
         orderBy: { publishedAt: "desc" },
-        include: {
-          author: true,
-          category: true,
-        },
+        include: { author: true, category: true },
       },
     },
   });
-
   if (!author) notFound();
 
   const initials = author.name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+    .split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
 
   const personSchema = {
     "@context": "https://schema.org",
@@ -58,74 +49,83 @@ export default async function AuthorPage({ params }: Props) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
-      />
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }} />
 
-      {/* Author Profile Header */}
-      <div className="max-w-3xl mx-auto text-center mb-16">
-        {author.avatar ? (
-          <img
-            src={author.avatar}
-            alt={author.name}
-            className="w-28 h-28 rounded-full object-cover mx-auto mb-6 border-4 border-white shadow-lg"
-          />
-        ) : (
-          <div className="w-28 h-28 rounded-full bg-navy flex items-center justify-center text-white text-3xl font-bold mx-auto mb-6 shadow-lg">
-            {initials}
-          </div>
-        )}
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-navy mb-2">
-          {author.name}
-        </h1>
-        <p className="text-gold font-semibold mb-4">
-          Especialista em Vendas e CRM
-        </p>
-        {author.bio && (
-          <p className="text-gray-600 max-w-xl mx-auto leading-relaxed">
-            {author.bio}
-          </p>
-        )}
-        {author.email && (
-          <a
-            href={`mailto:${author.email}`}
-            className="inline-block mt-4 text-sm text-gold hover:text-gold-light transition-colors"
-          >
-            {author.email}
-          </a>
-        )}
-      </div>
-
-      {/* Author Posts */}
-      <div>
-        <h2 className="text-2xl font-bold text-navy mb-8">
-          Artigos de {author.name}
-        </h2>
-
-        {author.posts.length === 0 ? (
-          <p className="text-gray-500 text-center py-12">
-            Nenhum artigo publicado por este autor ainda.
-          </p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {author.posts.map((post) => (
-              <PostCard
-                key={post.id}
-                title={post.title}
-                slug={post.slug}
-                excerpt={post.excerpt || ""}
-                coverImage={post.coverImage || undefined}
-                publishedAt={post.publishedAt?.toISOString() || post.createdAt.toISOString()}
-                authorName={author.name}
-                categoryName={post.category.name}
-                categorySlug={post.category.slug}
+      <section className="brutal-hero">
+        <div className="container-x">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            {author.avatar ? (
+              <img
+                src={author.avatar}
+                alt={author.name}
+                style={{
+                  width: 100, height: 100,
+                  border: 'var(--border-thick)',
+                  boxShadow: '6px 6px 0 0 var(--magenta)',
+                  objectFit: 'cover',
+                  transform: 'rotate(-3deg)',
+                }}
               />
-            ))}
+            ) : (
+              <div
+                className="grid place-items-center shrink-0"
+                style={{
+                  width: 100, height: 100,
+                  background: 'var(--grad)',
+                  border: 'var(--border-thick)',
+                  color: '#fff',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: 42,
+                  boxShadow: '6px 6px 0 0 var(--magenta)',
+                  transform: 'rotate(-3deg)',
+                }}
+              >
+                {initials}
+              </div>
+            )}
+            <div>
+              <span className="eyebrow"><span className="dot" />Autor</span>
+              <h1 style={{ marginTop: 12 }}>{author.name}<em>.</em></h1>
+              <p style={{ fontFamily: 'var(--font-mono)', textTransform: 'uppercase', fontSize: 12, letterSpacing: '0.1em' }}>
+                Especialista em Vendas e CRM
+              </p>
+            </div>
           </div>
-        )}
-      </div>
-    </div>
+          {author.bio && <p className="mt-6 max-w-2xl">{author.bio}</p>}
+        </div>
+      </section>
+
+      <section className="brutal-section">
+        <div className="container-x">
+          <span className="section-num">ARTIGOS</span>
+          <h2 className="section-title" style={{ fontSize: 'clamp(32px, 4.5vw, 56px)', marginTop: 12, marginBottom: 32 }}>
+            Por {author.name}.
+          </h2>
+
+          {author.posts.length === 0 ? (
+            <p style={{ textAlign: 'center', padding: '48px 0', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', opacity: 0.6 }}>
+              Nenhum artigo publicado.
+            </p>
+          ) : (
+            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
+              {author.posts.map((post) => (
+                <PostCard
+                  key={post.id}
+                  title={post.title}
+                  slug={post.slug}
+                  excerpt={post.excerpt || ""}
+                  coverImage={post.coverImage || undefined}
+                  publishedAt={post.publishedAt?.toISOString() || post.createdAt.toISOString()}
+                  authorName={author.name}
+                  categoryName={post.category.name}
+                  categorySlug={post.category.slug}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
